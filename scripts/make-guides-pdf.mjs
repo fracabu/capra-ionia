@@ -96,7 +96,8 @@ export function render(body) {
 
 /** Rimanda al sito e alle altre guide: chi scarica questa non sa che esistono. */
 function linksHtml(current) {
-  const others = GUIDES.filter((g) => g.id !== current);
+  // Tre soltanto: elencarle tutte allungherebbe ogni guida di una pagina.
+  const others = GUIDES.filter((g) => g.id !== current).slice(0, 3);
   const list = others
     .map((g) => `<li><a href="${SITE}/#/guide/${g.id}">${esc(g.title)}</a></li>`)
     .join("");
@@ -108,8 +109,9 @@ function linksHtml(current) {
     <p class="cta"><a href="${SITE}/#/terreni">Vedi i terreni in vendita a Cefalonia</a>
        — annunci ordinati per €/m², con scheda e contatti dell'agenzia.</p>
     ${fb}
-    <p class="also">Le altre guide gratuite:</p>
+    <p class="also">Altre guide gratuite:</p>
     <ul>${list}</ul>
+    <p class="also"><a href="${SITE}/#/guide">Vedi tutte le guide</a></p>
   </section>`;
 }
 

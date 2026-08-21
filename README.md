@@ -10,7 +10,7 @@ guida AFM interattiva e CTA verso la pagina Facebook.
 ## Pagine
 - `/` Home — hero, terreni consigliati, guide, CTA Facebook
 - `/terreni` — portale con filtri (entro/fuori piano, budget, consigliati) e slider prezzo
-- `/guide` — indice delle 3 guide gratuite
+- `/guide` — indice delle guide gratuite
 - `/guide/:id` — dettaglio guida con anteprima e sblocco via email (per `afm` anche checklist interattiva)
 
 ## ⚙️ Configurazione (2 minuti)

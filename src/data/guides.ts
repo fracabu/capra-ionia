@@ -100,6 +100,123 @@ L'IVA 24% riguarda solo gli immobili nuovi (sospesa fino al 31/12/2026), NON i t
 
 Nota: guida informativa, non consulenza legale.`,
   },
+  {
+    id: "conto", icon: "🏦",
+    title: "Aprire un conto in banca in Grecia",
+    sub: "Non serve per firmare, diventa indispensabile subito dopo.",
+    bullets: ["Quando serve davvero e quando no", "I documenti che chiedono le banche", "Come farlo senza andare in Grecia"],
+    body: `GUIDA GRATUITA · CAPRA IONIA
+APRIRE UN CONTO IN BANCA IN GRECIA
+
+Per comprare un terreno il conto greco non è sempre obbligatorio: l'imposta di trasferimento si paga online tramite myPROPERTY e il saldo al rogito passa di norma per assegno circolare o bonifico. Diventa però difficile farne a meno dopo: ENFIA e TAP ogni anno, eventuali utenze, i pagamenti a ingegnere e avvocato. Conferma col notaio come vuole ricevere il saldo prima di decidere.
+
+PRIMA DI TUTTO SERVE L'AFM
+Il codice fiscale greco viene prima del conto: senza, nessuna banca apre. Se non ce l'hai ancora, parti dalla guida dedicata.
+
+I DOCUMENTI CHE CHIEDONO
+· Passaporto o carta d'identità UE in corso di validità
+· AFM (il codice fiscale greco)
+· Prova di indirizzo di residenza, di solito una bolletta recente
+· Dichiarazione della residenza fiscale
+· Prova di reddito o di attività: busta paga, dichiarazione dei redditi, visura
+
+LE RICHIESTE CAMBIANO DA BANCA A BANCA
+Non esiste una lista unica: ogni istituto applica le proprie regole antiriciclaggio, e alcune filiali chiedono anche permesso di soggiorno o documentazione aggiuntiva ai non residenti. Conviene sentire due o tre banche prima di scegliere, invece di dare per scontato che la prima rifiuti per tutte.
+
+FARLO DA REMOTO
+Anche qui vale la procura: puoi incaricare un avvocato o un commercialista greco di aprire il conto per tuo conto, con procura notarile apostillata. È la stessa procedura che serve per l'AFM e per il rogito, quindi conviene farne una sola che copra tutto.
+
+DA CHIARIRE PRIMA
+Chiedi in anticipo canone mensile, costo dei bonifici dall'Italia e se il conto viene declassato quando resta inattivo. Su un terreno da 30.000 €, cento euro l'anno di spese fisse non sono un dettaglio.
+
+Nota: guida informativa, non consulenza legale. Le condizioni bancarie cambiano spesso: verifica sempre con la banca.`,
+  },
+  {
+    id: "procura", icon: "✍️",
+    title: "Comprare da remoto con la procura",
+    sub: "Firmare il rogito senza mai salire su un aereo.",
+    bullets: ["Procura speciale, non generale", "Notaio in Italia più apostille", "Cosa deve contenere per essere valida"],
+    body: `GUIDA GRATUITA · CAPRA IONIA
+COMPRARE DA REMOTO CON LA PROCURA
+
+Non serve essere in Grecia per comprare. Con una procura a un avvocato greco puoi delegare tutto: ottenere l'AFM, aprire il conto, firmare il rogito. È la strada che sceglie chi non può permettersi due o tre viaggi durante la trattativa.
+
+SPECIALE, NON GENERALE
+Esistono due tipi di procura. Quella generale copre ogni materia legale; quella speciale è limitata a un'operazione precisa. Per un acquisto è preferibile la speciale: definisce esattamente cosa il tuo incaricato può fare, e nulla di più.
+
+I TRE PASSAGGI
+A) Firma davanti a un notaio in Italia, sul testo predisposto dal tuo avvocato greco.
+B) Apostille sul documento, secondo la Convenzione dell'Aia del 1961. In Italia la rilascia la Prefettura o la Procura, a seconda dell'atto.
+C) Traduzione giurata in greco, da un traduttore riconosciuto dai tribunali greci.
+
+In alternativa ai primi due passaggi puoi firmare direttamente davanti al consolato greco in Italia, che autentica senza bisogno di apostille.
+
+COSA DEVE CONTENERE
+La procura deve identificare il terreno in modo inequivocabile: ubicazione esatta, superficie, dati catastali. Deve elencare i poteri concessi e gli eventuali limiti, per esempio un prezzo massimo oltre il quale il tuo incaricato non può firmare. Una procura vaga viene contestata o rifiutata dal notaio greco.
+
+METTICI TUTTO INSIEME
+Visto che ogni procura costa notaio, apostille e traduzione, conviene farne una sola che copra AFM, conto corrente e rogito, invece di tre separate a distanza di settimane.
+
+UN LIMITE DA CONOSCERE
+Delegare la firma non significa delegare il giudizio. Il controllo dei titoli, dei confini e dei vincoli resta lavoro dell'avvocato e dell'ingegnere che scegli tu: la procura rende possibile non esserci, non ti dispensa dal capire cosa stai comprando.
+
+Nota: guida informativa, non consulenza legale.`,
+  },
+  {
+    id: "allacci", icon: "⚡",
+    title: "Luce e acqua sul terreno",
+    sub: "La regola che sorprende: senza permesso non c'è allaccio.",
+    bullets: ["Perché serve il permesso edilizio prima", "Cosa chiede DEDDIE per la connessione", "Il costo nascosto della distanza"],
+    body: `GUIDA GRATUITA · CAPRA IONIA
+LUCE E ACQUA SUL TERRENO
+
+È la domanda che arriva sempre dopo il rogito, e la risposta spiazza: in Grecia l'allaccio elettrico non segue il terreno, segue la costruzione. Senza permesso edilizio non c'è fornitura domestica.
+
+COSA CHIEDE DEDDIE
+Il gestore della rete di distribuzione chiede, per una nuova connessione, la domanda di allaccio, copia del permesso edilizio, il diagramma topografico approvato e le planimetrie. Serve inoltre la verifica di connessione emessa tramite il sistema e-Licenses del TEE, la Camera tecnica greca, da un ingegnere che devi incaricare tu.
+
+QUINDI SU TERRENO NON EDIFICABILE
+Non si allaccia, ed è il motivo per cui un lotto non edificabile a buon prezzo resta comunque un cattivo affare. È anche la ragione per cui una casetta prefabbricata collegata stabilmente a corrente e acqua viene trattata come costruzione a tutti gli effetti.
+
+LA FORNITURA AGRICOLA È UN'ALTRA COSA
+Esiste una categoria separata per usi agricoli, che richiede una relazione tecnico-economica del servizio agricolo dell'unità regionale competente. Serve a irrigare o alimentare un'attività agricola, non a vivere sul posto: non è una scorciatoia per abitare un terreno non edificabile.
+
+L'ACQUA DIPENDE DAL COMUNE
+Non c'è una regola nazionale unica: la gestione idrica è comunale, e condizioni e tempi cambiano da un comune all'altro. A Cefalonia va verificato caso per caso, soprattutto fuori dagli insediamenti.
+
+IL COSTO CHE NESSUNO TI DICE
+Il preventivo di allaccio dipende dalla distanza dalla rete esistente. Un terreno panoramico lontano dai pali della luce può costare in allacci quanto una parte del terreno stesso. Prima di firmare, guarda dove passa la linea più vicina e fatti fare una stima.
+
+Nota: guida informativa, non consulenza legale. Procedure e requisiti vanno confermati con un ingegnere greco.`,
+  },
+  {
+    id: "societa", icon: "🏢",
+    title: "Comprare tramite società",
+    sub: "Spesso non conviene, e c'è un'imposta del 15% da conoscere.",
+    bullets: ["Nessuno sconto ENFIA per le società", "L'imposta speciale del 15% annuo", "Quando ha senso e quando no"],
+    body: `GUIDA GRATUITA · CAPRA IONIA
+COMPRARE TRAMITE SOCIETÀ
+
+Prima o poi qualcuno te lo suggerisce. Per un terreno da 30.000 o 40.000 € che non produce reddito, quasi mai è una buona idea: i costi di gestione societaria sono certi, i vantaggi no.
+
+NESSUNO SCONTO SULL'ENFIA
+Le società pagano l'imposta annuale sulla proprietà con le stesse aliquote delle persone fisiche. Non c'è alcuna esenzione legata alla forma societaria: chi te la presenta come un risparmio fiscale sull'ENFIA sta dicendo una cosa falsa.
+
+L'IMPOSTA SPECIALE DEL 15%
+È il punto che va conosciuto prima di ogni altro. La Grecia applica un'imposta annuale del 15% sul valore dell'immobile alle strutture societarie che non rendono trasparente la propria compagine.
+
+Sono esenti le società che dichiarano i soci, a condizione che siano persone fisiche dotate di AFM greco e che l'entità sia registrata in Grecia o in un altro Stato dell'Unione europea. Le società registrate fuori dall'UE possono ottenere l'esenzione solo se la loro giurisdizione non rientra fra quelle considerate non cooperative dalla legge fiscale greca.
+
+La dichiarazione va presentata ogni anno entro il 20 maggio. Non è una formalità: su un immobile da 500.000 € una sola dichiarazione dimenticata vale 75.000 € di imposta.
+
+QUANDO PUÒ AVERE SENSO
+Il vantaggio reale riguarda i redditi da locazione: l'aliquota societaria si attesta al 22%, contro un massimo del 45% per le persone fisiche. Ma i dividendi scontano poi una ritenuta all'uscita, quindi il confronto va fatto sul netto finale, non sull'aliquota nominale.
+
+IL CALCOLO ONESTO
+Un terreno che non produce reddito non ha niente da tassare al 22%. Restano costi di costituzione, contabilità annuale, dichiarazioni e il rischio dell'imposta speciale se qualcosa nella struttura non è in regola. Prima di intraprendere questa strada, fatti fare due preventivi a confronto da un commercialista greco: acquisto come persona fisica e come società, su dieci anni.
+
+Nota: guida informativa, non consulenza fiscale. La materia è tecnica e cambia: fatti assistere da un professionista greco.`,
+  },
 ];
 
 export const AFM_STEPS: [string, string][] = [

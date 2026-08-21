@@ -352,7 +352,7 @@ function HomePage() {
           <LocalitySearch />
           <div className="mt-7 flex flex-wrap gap-3">
             <Button asChild className="bg-[#0F3440] hover:bg-[#14495a] text-white rounded-full h-12 px-7">
-              <Link to="/terreni">Vedi i 13 terreni</Link>
+              <Link to="/terreni">Vedi i {PLOTS.length} terreni</Link>
             </Button>
             <Button onClick={() => openGuide(GUIDES[0])} variant="outline" className="rounded-full h-12 px-7 border-[#0F3440] text-[#0F3440] hover:bg-[#0F3440] hover:text-white">
               Scarica la guida AFM
@@ -377,7 +377,7 @@ function HomePage() {
         </div>
         <PlotsMap />
           <div className="mt-6 flex gap-8 mono text-sm">
-            <div><b className="text-lg">13</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">ANNUNCI</span></div>
+            <div><b className="text-lg">{PLOTS.length}</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">ANNUNCI</span></div>
             <div><b className="text-lg">23–45k €</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">ENTRO PIANO</span></div>
             <div><b className="text-lg">3,09%</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">IMPOSTA</span></div>
           </div>
@@ -632,7 +632,7 @@ function GuideIndexPage() {
         <div className="max-w-6xl mx-auto px-5">
           <p className="mono text-xs tracking-[.3em] text-[#D9A441] uppercase">Guide gratuite</p>
           <h1 className="display text-3xl md:text-5xl mt-2 text-white">La burocrazia greca, tradotta in italiano</h1>
-          <p className="text-[#A9CDCF] mt-2 max-w-xl text-sm">Tre guide pratiche per chi compra dall'Italia. Le leggi in anteprima e le scarichi gratis lasciando la tua email.</p>
+          <p className="text-[#A9CDCF] mt-2 max-w-xl text-sm">{GUIDES.length} guide pratiche per chi compra dall'Italia. Le leggi in anteprima e le scarichi gratis lasciando la tua email.</p>
           <div className="mt-8 grid md:grid-cols-3 gap-5">
             {GUIDES.map((g, i) => <GuideCard key={g.id} g={g} delay={i * 90} />)}
           </div>
