@@ -17,6 +17,11 @@ import { tmpdir } from "node:os";
 import { GUIDES } from "../src/data/guides.ts";
 
 const OUT = resolve("public/guide");
+
+/* Da tenere allineati a src/App.tsx. FACEBOOK vuoto = il blocco non compare:
+   meglio nessun link che un link alla home generica di Facebook. */
+const SITE = "https://fracabu.github.io/capra-ionia";
+const FACEBOOK = "";
 const CANDIDATES = [
   process.env.CHROME_PATH,
   "/opt/pw-browsers/chromium",
@@ -88,14 +93,33 @@ export function render(body) {
   return { kicker, title, html: out.join("\n") };
 }
 
-export function page({ kicker, title, html }, sub) {
+/** Rimanda al sito e alle altre guide: chi scarica questa non sa che esistono. */
+function linksHtml(current) {
+  const others = GUIDES.filter((g) => g.id !== current);
+  const list = others
+    .map((g) => `<li><a href="${SITE}/#/guide/${g.id}">${esc(g.title)}</a></li>`)
+    .join("");
+  const fb = FACEBOOK
+    ? `<p class="cta"><a href="${FACEBOOK}">Entra nel gruppo Facebook</a> — nuovi terreni ogni settimana</p>`
+    : "";
+  return `<section class="links">
+    <h2>Continua su Capra Ionia</h2>
+    <p class="cta"><a href="${SITE}/#/terreni">Vedi i terreni in vendita a Cefalonia</a>
+       — annunci ordinati per €/m², con scheda e contatti dell'agenzia.</p>
+    ${fb}
+    <p class="also">Le altre guide gratuite:</p>
+    <ul>${list}</ul>
+  </section>`;
+}
+
+export function page({ kicker, title, html }, sub, id) {
   return `<!doctype html><html lang="it"><head><meta charset="utf-8">
 <style>
-  @page { size: A4; margin: 16mm; }
+  @page { size: A4; margin: 14mm 15mm; }
   * { box-sizing: border-box; }
   body {
     margin: 0; font-family: "DejaVu Sans", sans-serif; font-size: 10pt;
-    line-height: 1.55; color: #24424C; -webkit-print-color-adjust: exact;
+    line-height: 1.5; color: #24424C; -webkit-print-color-adjust: exact;
   }
   header { border-bottom: 2.5pt solid #2E93A6; padding-bottom: 9pt; margin-bottom: 16pt; }
   .kicker {
@@ -109,10 +133,10 @@ export function page({ kicker, title, html }, sub) {
   .sub { margin: 7pt 0 0; font-size: 9.5pt; color: #4A6B75; font-style: italic; }
   h2 {
     font-size: 9pt; letter-spacing: .1em; color: #135E73; font-weight: bold;
-    margin: 16pt 0 5pt; padding-left: 8pt; border-left: 2.5pt solid #D9A441;
+    margin: 13pt 0 4pt; padding-left: 8pt; border-left: 2.5pt solid #D9A441;
     break-after: avoid;
   }
-  p { margin: 0 0 8pt; }
+  p { margin: 0 0 7pt; }
   ul { margin: 0 0 9pt; padding-left: 14pt; }
   li { margin-bottom: 3pt; }
   /* La lettera A) B) C) è già il marcatore: un pallino in più sarebbe doppio. */
@@ -123,6 +147,18 @@ export function page({ kicker, title, html }, sub) {
     border: .8pt solid #2E93A6; border-radius: 1.5pt;
     margin-right: 7pt; vertical-align: -.5pt;
   }
+  .links {
+    margin-top: 13pt; padding: 8pt 11pt;
+    background: #F2F7F6; border-radius: 6pt; break-inside: avoid;
+  }
+  .links h2 {
+    margin: 0 0 6pt; padding: 0; border: 0;
+    font-size: 9pt; letter-spacing: .1em; color: #135E73;
+  }
+  .links p { margin: 0 0 5pt; font-size: 9pt; }
+  .links a { color: #135E73; font-weight: bold; }
+  .links .also { margin-top: 8pt; color: #93A9B0; font-size: 8.5pt; }
+  .links ul { margin: 3pt 0 0; padding-left: 14pt; font-size: 9pt; }
   .note {
     margin-top: 14pt; padding-top: 7pt; border-top: .5pt solid #E4EDEC;
     font-size: 8.5pt; color: #93A9B0; font-style: italic;
@@ -131,7 +167,7 @@ export function page({ kicker, title, html }, sub) {
      una pagina in più, anche quando il contenuto entrerebbe in una sola. */
   footer {
     display: flex; justify-content: space-between; gap: 12pt;
-    margin-top: 18pt; padding-top: 6pt;
+    margin-top: 12pt; padding-top: 5pt;
     border-top: .5pt solid #E4EDEC;
     font-size: 7.5pt; color: #93A9B0;
     break-inside: avoid;
@@ -143,6 +179,7 @@ export function page({ kicker, title, html }, sub) {
   <p class="sub">${esc(sub)}</p>
 </header>
 ${html}
+${linksHtml(id)}
 <footer><span>Capra Ionia · terreni edificabili a Cefalonia</span><span>fracabu.github.io/capra-ionia</span></footer>
 </body></html>`;
 }
@@ -154,7 +191,7 @@ export function build() {
 
   for (const g of GUIDES) {
     const src = join(tmp, `${g.id}.html`);
-    writeFileSync(src, page(render(g.body), g.sub), "utf8");
+    writeFileSync(src, page(render(g.body), g.sub, g.id), "utf8");
     execFileSync(chrome, [
       "--headless", "--disable-gpu", "--no-sandbox",
       "--no-pdf-header-footer",
