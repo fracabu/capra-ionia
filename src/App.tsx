@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { GUIDES, AFM_STEPS, type Guide } from "@/data/guides";
+import { PLOTS, type Plot } from "@/data/plots";
+import PlotsMap from "@/components/PlotsMap";
 
 /* ================= CONFIG =================
    Per raccogliere DAVVERO le email: crea un form gratuito su https://formspree.io,
@@ -17,25 +19,6 @@ const FORM_ENDPOINT = "https://formspree.io/f/xvkplvgw";
 const FACEBOOK_URL = "https://www.facebook.com/"; // <-- URL del gruppo Facebook
 
 /* ================= DATA ================= */
-type Plot = {
-  id: number; loc: string; zone: string; price: number; sqm: number;
-  status: "in" | "out" | "no"; note: string; src: string; star?: boolean;
-};
-const PLOTS: Plot[] = [
-  { id: 1, loc: "Faraklata", zone: "Argostoli · ~7 km", price: 23000, sqm: 166, status: "in", note: "Entro oikismos", src: "Enos Properties · ID 3035" },
-  { id: 2, loc: "Peratata", zone: "Livathos · ~8 km", price: 25000, sqm: 100, status: "in", note: "Entro oikismos", src: "Enos Properties · ID 2903" },
-  { id: 3, loc: "Chavriata", zone: "Penisola di Paliki", price: 30000, sqm: 972, status: "in", note: "Entro oikismos", src: "Premium Kefalonia · 10311", star: true },
-  { id: 4, loc: "Kalligata", zone: "Livathos", price: 30000, sqm: 1500, status: "no", note: "NON edificabile — da scartare", src: "Enos Properties · ID 2911" },
-  { id: 5, loc: "Dorizata", zone: "Livathos", price: 33000, sqm: 500, status: "in", note: "Edificabile", src: "Premium Kefalonia · 10150", star: true },
-  { id: 6, loc: "Prokopata", zone: "Argostoli · Razata", price: 35000, sqm: 758, status: "in", note: "Entro piano urbanistico", src: "Premium Kefalonia · 10348", star: true },
-  { id: 7, loc: "Ratzakli", zone: "Sud · verso Skala", price: 35000, sqm: 2317, status: "out", note: "Fuori piano · edificabile", src: "Enos Properties · ID 2965" },
-  { id: 8, loc: "Epanoxori", zone: "Valsamata", price: 38000, sqm: 4035, status: "out", note: "Fuori piano · >4.000 m² → ~186 m² costruibili", src: "Enos Properties · ID 3261", star: true },
-  { id: 9, loc: "Livathos", zone: "Area Livathos", price: 39000, sqm: 442, status: "in", note: "Entro piano", src: "Premium Kefalonia · 10334" },
-  { id: 10, loc: "Peratata", zone: "Livathos", price: 40000, sqm: 420, status: "in", note: "Entro piano · ~240 m² edificabili", src: "Premium Kefalonia · 1075" },
-  { id: 11, loc: "Dorizata", zone: "Livathos", price: 40000, sqm: 501, status: "in", note: "Entro oikismos", src: "Enos Properties · ID 3214" },
-  { id: 12, loc: "Vlichata", zone: "Vista mare · 2,5 km dal mare", price: 40000, sqm: 4000, status: "out", note: "Fuori oikismos · 6 lotti disponibili", src: "Mesitiko Moisis / estateellas" },
-  { id: 13, loc: "Menegata", zone: "Livathos", price: 45000, sqm: 538, status: "in", note: "Entro piano · ~240 m² edificabili", src: "Premium Kefalonia · 10490" },
-];
 
 /* ================= HELPERS ================= */
 const fmt = (n: number) => n.toLocaleString("it-IT");
@@ -165,7 +148,9 @@ function PlotCard({ p, delay = 0 }: { p: Plot; delay?: number }) {
         <CardContent className="p-5">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h3 className="display text-xl">{p.loc}</h3>
+              <Link to={`/terreni/${p.id}`} className="display text-xl hover:text-[#135E73] transition-colors">
+                {p.loc}
+              </Link>
               <p className="text-xs text-[#93A9B0]">{p.zone}</p>
             </div>
             <div className="text-right mono text-[11px] text-[#93A9B0]">€/m²<div className="text-[15px] font-semibold text-[#6E7F5A]">{(p.price / p.sqm).toFixed(0)}</div></div>
@@ -180,11 +165,17 @@ function PlotCard({ p, delay = 0 }: { p: Plot; delay?: number }) {
           </div>
           <p className="text-xs text-[#4A6B75] mt-3">{p.note}</p>
           <p className="mono text-[10.5px] text-[#93A9B0] mt-2">{p.src}</p>
-          {p.status !== "no" && (
-            <Button onClick={() => openLead(p)} variant="outline" className="mt-4 w-full rounded-full border-[#CADEDD] text-[#135E73] hover:bg-[#135E73] hover:text-white h-9 text-sm">
-              Richiedi info su questo terreno
-            </Button>
-          )}
+          <div className="mt-4 flex flex-col gap-2">
+            <Link to={`/terreni/${p.id}`}
+              className="mono text-xs text-center text-[#135E73] hover:text-[#0F3440]">
+              Vedi la scheda →
+            </Link>
+            {p.status !== "no" && (
+              <Button onClick={() => openLead(p)} variant="outline" className="w-full rounded-full border-[#CADEDD] text-[#135E73] hover:bg-[#135E73] hover:text-white h-9 text-sm">
+                Richiedi info su questo terreno
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </Reveal>
@@ -370,6 +361,16 @@ function HomePage() {
         </div>
       </section>
 
+      <section className="max-w-6xl mx-auto px-5 pb-4">
+        <div className="flex items-baseline justify-between gap-4 mb-3">
+          <h2 className="display text-xl">Dove sono i terreni</h2>
+          <Link to="/terreni" className="mono text-xs text-[#135E73] hover:text-[#0F3440] shrink-0">
+            Vedi l'elenco →
+          </Link>
+        </div>
+        <PlotsMap />
+      </section>
+
       <div className="meander" />
 
       <section className="max-w-6xl mx-auto px-5 py-14">
@@ -477,6 +478,119 @@ function TerreniPage() {
         </p>
       )}
       <div className="pt-16"><FbBanner /></div>
+    </div>
+  );
+}
+
+/* ================= SCHEDA DEL SINGOLO TERRENO ================= */
+function PlotVisual({ p, tall = false }: { p: Plot; tall?: boolean }) {
+  if (p.img) {
+    return (
+      <img src={p.img} alt={`Terreno a ${p.loc}`}
+        className={`w-full object-cover rounded-2xl ${tall ? "h-[340px]" : "h-40"}`} />
+    );
+  }
+  // Nessuna foto: un riquadro dichiaratamente grafico, non un finto scatto.
+  return (
+    <div className={`w-full rounded-2xl bg-gradient-to-br from-[#135E73] to-[#2E93A6] text-white
+                     flex flex-col items-center justify-center gap-2 ${tall ? "h-[340px]" : "h-40"}`}>
+      <Goat size={tall ? 110 : 60} stroke="#FFFFFF" />
+      <span className="mono text-[10px] tracking-[.25em] uppercase opacity-70">Foto non disponibile</span>
+    </div>
+  );
+}
+
+function TerrenoPage() {
+  const { id } = useParams();
+  const { openLead } = useContext(GateCtx);
+  const p = PLOTS.find((x) => String(x.id) === id);
+
+  if (!p) {
+    return (
+      <div className="page max-w-3xl mx-auto px-5 py-20 text-center">
+        <h1 className="display text-3xl">Terreno non trovato</h1>
+        <p className="text-[#4A6B75] mt-2">Forse è stato venduto o l&apos;indirizzo è cambiato.</p>
+        <Link to="/terreni" className="inline-block mt-6 mono text-sm text-[#135E73]">← Torna al portale</Link>
+      </div>
+    );
+  }
+
+  const perSqm = Math.round(p.price / p.sqm);
+  const tone = p.status === "in" ? "#2E93A6" : p.status === "out" ? "#D9A441" : "#C0492F";
+  const label = p.status === "in" ? "Entro piano" : p.status === "out" ? "Fuori piano" : "Non edificabile";
+  // Confronto onesto: quanto costa al m² rispetto agli altri terreni edificabili.
+  const others = PLOTS.filter((x) => x.status !== "no");
+  const cheaper = others.filter((x) => x.price / x.sqm < perSqm).length;
+
+  const row = (k: string, v: React.ReactNode) => (
+    <div className="flex justify-between gap-4 py-2.5 border-b border-[#E4EDEC] last:border-0">
+      <span className="text-[#93A9B0]">{k}</span>
+      <span className="text-right text-[#24424C]">{v}</span>
+    </div>
+  );
+
+  return (
+    <div className="page max-w-5xl mx-auto px-5 py-10">
+      <Link to="/terreni" className="mono text-xs text-[#135E73] hover:text-[#0F3440]">← Tutti i terreni</Link>
+
+      <div className="grid md:grid-cols-[1.1fr_.9fr] gap-8 mt-4">
+        <div>
+          <PlotVisual p={p} tall />
+          <h1 className="display text-3xl md:text-4xl mt-6">{p.loc}</h1>
+          <p className="text-[#4A6B75] mt-1">{p.zone}</p>
+
+          <div className="flex flex-wrap gap-2 mt-4">
+            <span className="mono text-xs rounded-full px-3 py-1.5 text-white" style={{ background: tone }}>{label}</span>
+            {p.star && <span className="mono text-xs rounded-full px-3 py-1.5 bg-[#D9A441] text-white">★ Consigliato</span>}
+          </div>
+
+          <h2 className="display text-xl mt-8">Il terreno</h2>
+          <p className="text-[#4A6B75] mt-2 leading-relaxed whitespace-pre-line">{p.desc ?? p.note}</p>
+
+          {p.status === "no" && (
+            <p className="mt-4 text-sm text-[#C0492F] bg-[#FBEDE9] rounded-xl p-4">
+              Su questo lotto <b>non si può costruire</b>. Lo teniamo in elenco per trasparenza:
+              compare in vendita, ma non fa al caso di chi vuole edificare.
+            </p>
+          )}
+        </div>
+
+        <aside>
+          <div className="rounded-2xl border border-[#E4EDEC] p-6 md:sticky md:top-24">
+            <p className="display text-4xl text-[#0F3440]">{fmt(p.price)} €</p>
+            <p className="mono text-xs text-[#93A9B0] mt-1">{perSqm} €/m²</p>
+
+            <div className="text-sm mt-5">
+              {row("Superficie", `${fmt(p.sqm)} m²`)}
+              {row("Prezzo al m²", `${perSqm} €`)}
+              {row("Edificabilità", label)}
+              {row("Località", `${p.loc} · ${p.zone}`)}
+              {row("Fonte", p.src)}
+            </div>
+
+            {p.status !== "no" && (
+              <p className="text-xs text-[#93A9B0] mt-4">
+                {cheaper === 0
+                  ? "È il terreno col miglior prezzo al m² del nostro elenco."
+                  : `${cheaper} terreni su ${others.length} costano meno al m².`}
+              </p>
+            )}
+
+            <Button onClick={() => openLead(p)}
+              className="w-full mt-5 h-12 rounded-full bg-[#0F3440] hover:bg-[#14495a] text-white">
+              Richiedi informazioni su questo terreno
+            </Button>
+            <p className="text-[10px] text-[#93A9B0] mono mt-2 text-center">
+              Ti mandiamo dettagli e riferimenti dell&apos;agenzia
+            </p>
+          </div>
+        </aside>
+      </div>
+
+      <p className="text-xs text-[#93A9B0] mt-10">
+        Prezzo e disponibilità sono da riconfermare con l&apos;agenzia. Contenuto informativo,
+        non consulenza legale.
+      </p>
     </div>
   );
 }
@@ -617,6 +731,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/terreni" element={<TerreniPage />} />
+              <Route path="/terreni/:id" element={<TerrenoPage />} />
               <Route path="/guide" element={<GuideIndexPage />} />
               <Route path="/guide/:id" element={<GuideDetailPage />} />
               <Route path="*" element={<HomePage />} />
