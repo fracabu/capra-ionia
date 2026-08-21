@@ -15,6 +15,7 @@ import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
 import { GUIDES } from "../src/data/guides.ts";
+import { goatSvg } from "../src/data/logo.ts";
 
 const OUT = resolve("public/guide");
 
@@ -113,15 +114,24 @@ function linksHtml(current) {
 }
 
 export function page({ kicker, title, html }, sub, id) {
+  // Il marchio ora sta nella testata col logo: ripeterlo nell'occhiello no.
+  kicker = kicker.replace(/\s*·\s*CAPRA IONIA\s*$/i, "");
   return `<!doctype html><html lang="it"><head><meta charset="utf-8">
 <style>
   @page { size: A4; margin: 14mm 15mm; }
   * { box-sizing: border-box; }
   body {
     margin: 0; font-family: "DejaVu Sans", sans-serif; font-size: 10pt;
-    line-height: 1.5; color: #24424C; -webkit-print-color-adjust: exact;
+    line-height: 1.45; color: #24424C; -webkit-print-color-adjust: exact;
   }
-  header { border-bottom: 2.5pt solid #2E93A6; padding-bottom: 9pt; margin-bottom: 16pt; }
+  header { border-bottom: 2.5pt solid #2E93A6; padding-bottom: 7pt; margin-bottom: 12pt; }
+  .brand {
+    display: flex; align-items: center; gap: 6pt; margin-bottom: 5pt;
+  }
+  .brand span {
+    font-family: "DejaVu Serif", serif; font-size: 10.5pt;
+    letter-spacing: .06em; color: #0F3440;
+  }
   .kicker {
     font-size: 7.5pt; letter-spacing: .22em; text-transform: uppercase;
     color: #2E93A6; font-weight: bold; margin: 0 0 6pt;
@@ -130,14 +140,14 @@ export function page({ kicker, title, html }, sub, id) {
     font-family: "DejaVu Serif", serif; font-size: 19pt; line-height: 1.25;
     color: #0F3440; margin: 0; font-weight: normal;
   }
-  .sub { margin: 7pt 0 0; font-size: 9.5pt; color: #4A6B75; font-style: italic; }
+  .sub { margin: 5pt 0 0; font-size: 9.5pt; color: #4A6B75; font-style: italic; }
   h2 {
     font-size: 9pt; letter-spacing: .1em; color: #135E73; font-weight: bold;
-    margin: 13pt 0 4pt; padding-left: 8pt; border-left: 2.5pt solid #D9A441;
+    margin: 11pt 0 3pt; padding-left: 7pt; border-left: 2.5pt solid #D9A441;
     break-after: avoid;
   }
   p { margin: 0 0 7pt; }
-  ul { margin: 0 0 9pt; padding-left: 14pt; }
+  ul { margin: 0 0 7pt; padding-left: 14pt; }
   li { margin-bottom: 3pt; }
   /* La lettera A) B) C) è già il marcatore: un pallino in più sarebbe doppio. */
   ul.letters { list-style: none; padding-left: 2pt; }
@@ -174,6 +184,7 @@ export function page({ kicker, title, html }, sub, id) {
   }
 </style></head><body>
 <header>
+  <div class="brand">${goatSvg({ size: 24, stroke: "#0F3440" })}<span>CAPRA IONIA</span></div>
   <p class="kicker">${esc(kicker)}</p>
   <h1>${esc(title)}</h1>
   <p class="sub">${esc(sub)}</p>

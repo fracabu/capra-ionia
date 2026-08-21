@@ -9,6 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Checkbox } from "@/components/ui/checkbox";
 import { GUIDES, AFM_STEPS, type Guide } from "@/data/guides";
 import { PLOTS, type Plot } from "@/data/plots";
+import { GOAT_VIEWBOX, GOAT_PATHS, GOAT_EYE, GOAT_GROUND, GROUND_COLOR } from "@/data/logo";
 import PlotsMap from "@/components/PlotsMap";
 
 /* ================= CONFIG =================
@@ -61,13 +62,14 @@ function ScrollToTop() {
 /* Minimal goat logo (line art) */
 function Goat({ size = 40, stroke = "#0F3440", bob = false }: { size?: number; stroke?: string; bob?: boolean }) {
   return (
-    <svg className={bob ? "goat-bob" : ""} width={size} height={size} viewBox="0 0 64 64" fill="none" aria-hidden="true">
-      <path d="M22 18 C18 10, 22 4, 28 6 M30 16 C28 10, 31 5, 36 6" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" />
-      <path d="M24 20 C20 22, 18 27, 20 31 L14 36 C11 38, 12 42, 16 42 L20 40 C22 46, 28 50, 35 49 L48 47 C54 46, 56 40, 53 35 C57 33, 57 27, 52 26 L36 24 C33 20, 28 18, 24 20 Z" stroke={stroke} strokeWidth="2.4" strokeLinejoin="round" />
-      <path d="M28 49 L28 58 M40 48 L40 58 M46 47 L48 57" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" />
-      <path d="M17 42 L15 47" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" />
-      <circle cx="22" cy="27" r="1.6" fill={stroke} />
-      <path d="M24 58 L52 58" stroke="#D9A441" strokeWidth="2.4" strokeLinecap="round" />
+    <svg className={bob ? "goat-bob" : ""} width={size} height={size} viewBox={GOAT_VIEWBOX} fill="none" aria-hidden="true">
+      {GOAT_PATHS.map((p, i) => (
+        <path key={i} d={p.d} stroke={stroke} strokeWidth="2.4"
+          strokeLinecap={"cap" in p ? p.cap : undefined}
+          strokeLinejoin={"join" in p ? p.join : undefined} />
+      ))}
+      <circle cx={GOAT_EYE.cx} cy={GOAT_EYE.cy} r={GOAT_EYE.r} fill={stroke} />
+      <path d={GOAT_GROUND} stroke={GROUND_COLOR} strokeWidth="2.4" strokeLinecap="round" />
     </svg>
   );
 }
