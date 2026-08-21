@@ -102,7 +102,7 @@ function linksHtml(current) {
     .map((g) => `<li><a href="${SITE}/#/guide/${g.id}">${esc(g.title)}</a></li>`)
     .join("");
   const fb = FACEBOOK
-    ? `<p class="cta"><a href="${FACEBOOK}">Entra nel gruppo Facebook</a> — nuovi terreni ogni settimana</p>`
+    ? `<p class="cta"><a href="${FACEBOOK}">Il nostro gruppo Facebook</a> — solo fotografie di Cefalonia, senza annunci</p>`
     : "";
   return `<section class="links">
     <h2>Continua su Capra Ionia</h2>

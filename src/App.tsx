@@ -117,7 +117,7 @@ function LeadForm({ context, onDone }: { context: string; onDone?: () => void })
       <div className="text-center py-6">
         <div className="text-4xl mb-3">🐐</div>
         <p className="display text-xl">Fatto, {name.split(" ")[0]}!</p>
-        <p className="text-sm text-[#4A6B75] mt-2">La guida è in download. Per non perderti i nuovi terreni sotto i 50k, entra nel gruppo Facebook:</p>
+        <p className="text-sm text-[#4A6B75] mt-2">La guida è in download. Se ti va, guarda anche com'è l'isola: nel nostro gruppo pubblichiamo solo fotografie di Cefalonia.</p>
         <Button asChild className="mt-4 bg-[#1877F2] hover:bg-[#1668d6] text-white rounded-full px-6">
           <a href={FACEBOOK_URL} target="_blank" rel="noreferrer">Entra nel gruppo Facebook →</a>
         </Button>
@@ -215,8 +215,8 @@ function FbBanner() {
         <div className="rounded-3xl bg-gradient-to-r from-[#135E73] to-[#2E93A6] text-white p-8 md:p-10 flex flex-col md:flex-row items-center gap-6">
           <Goat size={72} stroke="#FFFFFF" bob />
           <div className="flex-1 text-center md:text-left">
-            <h3 className="display text-2xl">Ogni settimana nuovi terreni sotto i 50k</h3>
-            <p className="text-sm text-[#D8ECEC] mt-1">Li pubblichiamo prima nel nostro gruppo Facebook da 33.000 iscritti, con analisi €/m² e verdetto della capretta.</p>
+            <h3 className="display text-2xl">Cefalonia come è davvero</h3>
+            <p className="text-sm text-[#D8ECEC] mt-1">Nel nostro gruppo Facebook pubblichiamo solo fotografie dell'isola: spiagge, calette, posti che valgono il viaggio. Nessun annuncio, nessuna vendita.</p>
           </div>
           <Button asChild className="bg-white text-[#135E73] hover:bg-[#EFF5F4] rounded-full h-12 px-8 font-semibold">
             <a href={FACEBOOK_URL} target="_blank" rel="noreferrer">Entra nel gruppo →</a>
