@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
    copia l'endpoint (es. https://formspree.io/f/abcdwxyz) e incollalo qui sotto.
    Finché è vuoto, il form funziona in modalità demo (successo senza invio). */
 const FORM_ENDPOINT = "";
-const FACEBOOK_URL = "https://www.facebook.com/"; // <-- URL della tua pagina FB
+const FACEBOOK_URL = "https://www.facebook.com/"; // <-- URL del gruppo Facebook
 
 /* ================= DATA ================= */
 type Plot = {
@@ -211,21 +211,28 @@ function LeadForm({ context, onDone }: { context: string; onDone?: () => void })
   const [privacy, setPrivacy] = useState(false);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [failed, setFailed] = useState(false);
   const valid = name.trim().length > 1 && /.+@.+\..+/.test(email) && privacy;
 
   async function submit() {
     if (!valid) { setOk(true); return; }
     setSending(true);
+    setFailed(false);
     try {
       if (FORM_ENDPOINT) {
-        await fetch(FORM_ENDPOINT, {
+        const res = await fetch(FORM_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
           body: JSON.stringify({ name, email, context }),
         });
+        // Senza questo controllo un 4xx passerebbe per invio riuscito e il
+        // contatto andrebbe perso senza che nessuno se ne accorga.
+        if (!res.ok) throw new Error(`Invio fallito con stato ${res.status}`);
       }
       setSent(true);
       onDone?.();
+    } catch {
+      setFailed(true);
     } finally { setSending(false); }
   }
 
@@ -234,9 +241,9 @@ function LeadForm({ context, onDone }: { context: string; onDone?: () => void })
       <div className="text-center py-6">
         <div className="text-4xl mb-3">🐐</div>
         <p className="display text-xl">Fatto, {name.split(" ")[0]}!</p>
-        <p className="text-sm text-[#4A6B75] mt-2">La guida è in download. Per non perderti i nuovi terreni sotto i 50k, seguici anche su Facebook:</p>
+        <p className="text-sm text-[#4A6B75] mt-2">La guida è in download. Per non perderti i nuovi terreni sotto i 50k, entra nel gruppo Facebook:</p>
         <Button asChild className="mt-4 bg-[#1877F2] hover:bg-[#1668d6] text-white rounded-full px-6">
-          <a href={FACEBOOK_URL} target="_blank" rel="noreferrer">Segui la pagina Facebook →</a>
+          <a href={FACEBOOK_URL} target="_blank" rel="noreferrer">Entra nel gruppo Facebook →</a>
         </Button>
       </div>
     );
@@ -250,6 +257,7 @@ function LeadForm({ context, onDone }: { context: string; onDone?: () => void })
         <span>Acconsento a ricevere la guida e aggiornamenti sui terreni a Cefalonia. Niente spam, promesso.</span>
       </label>
       {ok && !valid && <p className="text-xs text-[#C0492F]">Compila nome, email valida e consenso.</p>}
+      {failed && <p className="text-xs text-[#C0492F]">Invio non riuscito, riprova tra un momento.</p>}
       <Button onClick={submit} disabled={sending} className="w-full h-11 bg-[#0F3440] hover:bg-[#14495a] text-white rounded-full mono tracking-wide">
         {sending ? "Invio…" : "Scarica la guida gratuita ↓"}
       </Button>
@@ -324,10 +332,10 @@ function FbBanner() {
           <Goat size={72} stroke="#FFFFFF" bob />
           <div className="flex-1 text-center md:text-left">
             <h3 className="display text-2xl">Ogni settimana nuovi terreni sotto i 50k</h3>
-            <p className="text-sm text-[#D8ECEC] mt-1">Li pubblichiamo prima sulla nostra pagina Facebook, con analisi €/m² e verdetto della capretta.</p>
+            <p className="text-sm text-[#D8ECEC] mt-1">Li pubblichiamo prima nel nostro gruppo Facebook da 33.000 iscritti, con analisi €/m² e verdetto della capretta.</p>
           </div>
           <Button asChild className="bg-white text-[#135E73] hover:bg-[#EFF5F4] rounded-full h-12 px-8 font-semibold">
-            <a href={FACEBOOK_URL} target="_blank" rel="noreferrer">Segui la pagina →</a>
+            <a href={FACEBOOK_URL} target="_blank" rel="noreferrer">Entra nel gruppo →</a>
           </Button>
         </div>
       </Reveal>
