@@ -30,13 +30,18 @@ pnpm vite        # dev server
 pnpm vite build  # produce dist/index.html (file unico)
 ```
 
-## 🌍 Pubblicazione su GitHub Pages (gratis)
-Il sito già compilato è in `docs/index.html`.
-1. Push del repo su GitHub
-2. Settings → Pages → Source: **Deploy from a branch** → Branch: `main`, cartella `/docs`
-3. Il sito sarà online su `https://<tuo-utente>.github.io/<nome-repo>/`
+## 🌍 Pubblicazione su GitHub Pages
+Il deploy è automatico: il workflow `.github/workflows/deploy.yml` compila dai
+sorgenti e pubblica a ogni push su `main`. Attiva Pages da solo alla prima
+esecuzione (`actions/configure-pages` con `enablement`), quindi non serve
+toccare le impostazioni del repository.
 
-Dopo ogni modifica: `pnpm vite build && cp dist/index.html docs/index.html`, commit e push.
+Il sito sarà online su `https://<tuo-utente>.github.io/<nome-repo>/`.
+Non c'è più bisogno di ricompilare a mano: basta commit e push su `main`.
+
+`docs/index.html` resta aggiornato come copia del bundle, così il repo mantiene
+anche la modalità "Deploy from a branch" (`main` + cartella `/docs`) come
+alternativa se il deploy via Actions non fosse disponibile.
 (Il routing usa HashRouter, quindi funziona su GitHub Pages senza configurazioni.)
 
 ## 📝 Note
