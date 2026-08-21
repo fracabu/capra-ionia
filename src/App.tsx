@@ -483,6 +483,24 @@ function TerreniPage() {
 }
 
 /* ================= SCHEDA DEL SINGOLO TERRENO ================= */
+/* Le descrizioni sono testo semplice con paragrafi e **grassetto**: bastano
+   sei righe a renderle, senza aggiungere una libreria markdown al bundle. */
+function RichText({ text }: { text: string }) {
+  return (
+    <>
+      {text.split("\n\n").map((para, i) => (
+        <p key={i} className="text-[#4A6B75] mt-3 leading-relaxed">
+          {para.split(/(\*\*[^*]+\*\*)/g).map((chunk, j) =>
+            chunk.startsWith("**") && chunk.endsWith("**")
+              ? <strong key={j} className="font-semibold text-[#24424C]">{chunk.slice(2, -2)}</strong>
+              : chunk,
+          )}
+        </p>
+      ))}
+    </>
+  );
+}
+
 function PlotVisual({ p, tall = false }: { p: Plot; tall?: boolean }) {
   if (p.img) {
     return (
@@ -545,7 +563,7 @@ function TerrenoPage() {
           </div>
 
           <h2 className="display text-xl mt-8">Il terreno</h2>
-          <p className="text-[#4A6B75] mt-2 leading-relaxed whitespace-pre-line">{p.desc ?? p.note}</p>
+          <RichText text={p.desc ?? p.note} />
 
           {p.status === "no" && (
             <p className="mt-4 text-sm text-[#C0492F] bg-[#FBEDE9] rounded-xl p-4">
