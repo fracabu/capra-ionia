@@ -674,6 +674,8 @@ function TerrenoPage() {
               <p className="text-xs text-[#93A9B0] mt-4">
                 {cheaper === 0
                   ? "È il terreno col miglior prezzo al m² del nostro elenco."
+                  : cheaper === 1
+                  ? `Un solo terreno su ${others.length} costa meno al m².`
                   : `${cheaper} terreni su ${others.length} costano meno al m².`}
               </p>
             )}
