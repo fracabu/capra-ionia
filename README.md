@@ -31,6 +31,21 @@ pnpm vite        # dev server
 pnpm vite build  # produce dist/index.html (file unico)
 ```
 
+## 📄 Le guide in PDF
+I testi vivono in `src/data/guides.ts`, che è la sorgente unica: li usa il sito
+e li usa lo script che produce i PDF scaricabili in `public/guide/`.
+
+I PDF sono versionati e la build si limita a copiarli, perché le guide cambiano
+di rado e generarli a ogni build costerebbe una dipendenza in CI. Dopo aver
+modificato `src/data/guides.ts`, rigenerali e committa i file aggiornati:
+
+```bash
+node --experimental-strip-types scripts/make-guides-pdf.mjs
+```
+
+Serve Chromium: lo script cerca i percorsi più comuni, altrimenti indicalo con
+`CHROME_PATH=/percorso/al/binario`.
+
 ## 🌍 Pubblicazione su GitHub Pages
 Il deploy è automatico. Il workflow `.github/workflows/deploy.yml` compila dai
 sorgenti a ogni push su `main` e pubblica il risultato sul branch `gh-pages`,

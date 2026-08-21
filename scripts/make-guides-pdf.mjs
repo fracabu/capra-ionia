@@ -1,0 +1,174 @@
+/**
+ * Genera i PDF delle guide in public/guide, uno per ogni voce di GUIDES.
+ *
+ *   node --experimental-strip-types scripts/make-guides-pdf.mjs
+ *
+ * Non gira in CI: i testi delle guide cambiano di rado, quindi i PDF sono
+ * versionati e la build si limita a copiarli. Rilancialo quando modifichi
+ * src/data/guides.ts, e committa i file aggiornati.
+ *
+ * Serve Chromium: usa CHROME_PATH, altrimenti cerca i percorsi più comuni.
+ */
+import { execFileSync } from "node:child_process";
+import { mkdirSync, writeFileSync, rmSync, existsSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { tmpdir } from "node:os";
+import { GUIDES } from "../src/data/guides.ts";
+
+const OUT = resolve("public/guide");
+const CANDIDATES = [
+  process.env.CHROME_PATH,
+  "/opt/pw-browsers/chromium",
+  "/opt/pw-browsers/chromium-1194/chrome-linux/chrome",
+  "/usr/bin/chromium",
+  "/usr/bin/google-chrome",
+].filter(Boolean);
+
+const chrome = CANDIDATES.find((p) => existsSync(p));
+if (!chrome) {
+  console.error("Chromium non trovato. Imposta CHROME_PATH al binario.");
+  process.exit(1);
+}
+
+const esc = (t) =>
+  t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/** Una riga è un'intestazione se, tolte le parentesi, è quasi tutta maiuscola. */
+function isHeading(line) {
+  const bare = line.replace(/\([^)]*\)/g, "");
+  const letters = bare.match(/\p{L}/gu) ?? [];
+  if (letters.length < 3 || line.length > 90) return false;
+  const upper = letters.filter((c) => c !== c.toLowerCase()).length;
+  return upper / letters.length > 0.8;
+}
+
+/** Tre tipi di riga elencata, ognuno con un marcatore diverso. */
+function bulletKind(line) {
+  if (/^\[\s?\]\s/.test(line)) return "check";
+  if (/^[A-Z]\)\s/.test(line)) return "letters";
+  if (/^[·•-]\s/.test(line)) return "dots";
+  return null;
+}
+
+/** Il corpo è testo semplice: riga 1 occhiello, riga 2 titolo, poi sezioni. */
+export function render(body) {
+  const lines = body.split("\n");
+  const kicker = lines[0].trim();
+  const title = lines[1].trim();
+  const out = [];
+  let list = null;
+  let kind = null;
+
+  const flush = () => {
+    if (list) { out.push(`<ul class="${kind}">${list.join("")}</ul>`); list = null; kind = null; }
+  };
+
+  for (const raw of lines.slice(2)) {
+    const line = raw.trim();
+    if (!line) { flush(); continue; }
+
+    const k = bulletKind(line);
+    if (k) {
+      if (kind !== k) flush();
+      kind = k;
+      list ??= [];
+      // La lettera resta visibile e fa da marcatore; per gli altri si toglie.
+      const text = k === "letters" ? line : line.replace(/^(\[\s?\]|[·•-])\s/, "");
+      list.push(`<li>${esc(text)}</li>`);
+      continue;
+    }
+
+    flush();
+    if (isHeading(line)) out.push(`<h2>${esc(line)}</h2>`);
+    else if (/^Nota\b/i.test(line)) out.push(`<p class="note">${esc(line)}</p>`);
+    else out.push(`<p>${esc(line)}</p>`);
+  }
+  flush();
+  return { kicker, title, html: out.join("\n") };
+}
+
+export function page({ kicker, title, html }, sub) {
+  return `<!doctype html><html lang="it"><head><meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 16mm; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "DejaVu Sans", sans-serif; font-size: 10pt;
+    line-height: 1.55; color: #24424C; -webkit-print-color-adjust: exact;
+  }
+  header { border-bottom: 2.5pt solid #2E93A6; padding-bottom: 9pt; margin-bottom: 16pt; }
+  .kicker {
+    font-size: 7.5pt; letter-spacing: .22em; text-transform: uppercase;
+    color: #2E93A6; font-weight: bold; margin: 0 0 6pt;
+  }
+  h1 {
+    font-family: "DejaVu Serif", serif; font-size: 19pt; line-height: 1.25;
+    color: #0F3440; margin: 0; font-weight: normal;
+  }
+  .sub { margin: 7pt 0 0; font-size: 9.5pt; color: #4A6B75; font-style: italic; }
+  h2 {
+    font-size: 9pt; letter-spacing: .1em; color: #135E73; font-weight: bold;
+    margin: 16pt 0 5pt; padding-left: 8pt; border-left: 2.5pt solid #D9A441;
+    break-after: avoid;
+  }
+  p { margin: 0 0 8pt; }
+  ul { margin: 0 0 9pt; padding-left: 14pt; }
+  li { margin-bottom: 3pt; }
+  /* La lettera A) B) C) è già il marcatore: un pallino in più sarebbe doppio. */
+  ul.letters { list-style: none; padding-left: 2pt; }
+  ul.check { list-style: none; padding-left: 2pt; }
+  ul.check li::before {
+    content: ""; display: inline-block; width: 8pt; height: 8pt;
+    border: .8pt solid #2E93A6; border-radius: 1.5pt;
+    margin-right: 7pt; vertical-align: -.5pt;
+  }
+  .note {
+    margin-top: 14pt; padding-top: 7pt; border-top: .5pt solid #E4EDEC;
+    font-size: 8.5pt; color: #93A9B0; font-style: italic;
+  }
+  /* Non fisso: un elemento posizionato nel margine fa generare a Chromium
+     una pagina in più, anche quando il contenuto entrerebbe in una sola. */
+  footer {
+    display: flex; justify-content: space-between; gap: 12pt;
+    margin-top: 18pt; padding-top: 6pt;
+    border-top: .5pt solid #E4EDEC;
+    font-size: 7.5pt; color: #93A9B0;
+    break-inside: avoid;
+  }
+</style></head><body>
+<header>
+  <p class="kicker">${esc(kicker)}</p>
+  <h1>${esc(title)}</h1>
+  <p class="sub">${esc(sub)}</p>
+</header>
+${html}
+<footer><span>Capra Ionia · terreni edificabili a Cefalonia</span><span>fracabu.github.io/capra-ionia</span></footer>
+</body></html>`;
+}
+
+export function build() {
+  mkdirSync(OUT, { recursive: true });
+  const tmp = join(tmpdir(), `guide-pdf-${process.pid}`);
+  mkdirSync(tmp, { recursive: true });
+
+  for (const g of GUIDES) {
+    const src = join(tmp, `${g.id}.html`);
+    writeFileSync(src, page(render(g.body), g.sub), "utf8");
+    execFileSync(chrome, [
+      "--headless", "--disable-gpu", "--no-sandbox",
+      "--no-pdf-header-footer",
+      `--print-to-pdf=${join(OUT, `${g.id}.pdf`)}`,
+      `file://${src}`,
+    ], { stdio: "pipe" });
+    console.log(`  public/guide/${g.id}.pdf`);
+  }
+
+  rmSync(tmp, { recursive: true, force: true });
+  console.log(`\n${GUIDES.length} PDF generati.`);
+}
+
+// Importabile senza effetti collaterali: genera solo se eseguito direttamente.
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  build();
+}
