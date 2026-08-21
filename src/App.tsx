@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, createContext, useContext } from "react";
-import { HashRouter, Routes, Route, Link, NavLink, useLocation, useParams, useNavigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Link, NavLink, useLocation, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -233,6 +233,105 @@ function FbBanner() {
 }
 
 /* ================= PAGES ================= */
+/* ================= RICERCA LOCALITÀ ================= */
+/* Confronto senza accenti né maiuscole: "Faraklata" trova anche "faraklata". */
+const norm = (s: string) =>
+  s.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+
+const matchesPlot = (p: Plot, q: string) =>
+  !q.trim() || norm(`${p.loc} ${p.zone}`).includes(norm(q.trim()));
+
+/** Località distinte che corrispondono alla query, con conteggio e prezzo minimo. */
+function findLocalities(q: string) {
+  const groups = new Map<string, Plot[]>();
+  for (const p of PLOTS) {
+    if (!matchesPlot(p, q)) continue;
+    const list = groups.get(p.loc);
+    if (list) list.push(p);
+    else groups.set(p.loc, [p]);
+  }
+  return [...groups.entries()]
+    .map(([loc, ps]) => ({
+      loc,
+      zone: ps[0].zone,
+      count: ps.length,
+      min: Math.min(...ps.map((p) => p.price)),
+    }))
+    .sort((a, b) => a.min - b.min);
+}
+
+function LocalitySearch() {
+  const navigate = useNavigate();
+  const [q, setQ] = useState("");
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const results = useMemo(() => findLocalities(q).slice(0, 6), [q]);
+
+  const go = (loc?: string) => {
+    setOpen(false);
+    const target = loc ?? q.trim();
+    navigate(target ? `/terreni?q=${encodeURIComponent(target)}` : "/terreni");
+  };
+
+  function onKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Escape") return setOpen(false);
+    if (e.key === "Enter") return go(open && results[active] ? results[active].loc : undefined);
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+    e.preventDefault();
+    setOpen(true);
+    setActive((i) => {
+      const n = results.length;
+      if (!n) return 0;
+      return e.key === "ArrowDown" ? (i + 1) % n : (i - 1 + n) % n;
+    });
+  }
+
+  return (
+    <div className="relative mt-7 max-w-md">
+      <div className="flex items-center gap-2 bg-white border border-[#CADEDD] rounded-full h-12 px-4 focus-within:border-[#2E93A6] transition-colors">
+        <span aria-hidden className="text-[#93A9B0]">⌕</span>
+        <input
+          value={q}
+          onChange={(e) => { setQ(e.target.value); setOpen(true); setActive(0); }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setTimeout(() => setOpen(false), 120)}
+          onKeyDown={onKeyDown}
+          placeholder="Cerca una località — Livathos, Paliki, Argostoli…"
+          aria-label="Cerca una località"
+          className="flex-1 bg-transparent outline-none text-sm placeholder:text-[#93A9B0]"
+        />
+        <button onClick={() => go()} className="mono text-xs tracking-wide text-[#135E73] hover:text-[#0F3440] shrink-0">
+          Cerca →
+        </button>
+      </div>
+
+      {open && q.trim() !== "" && (
+        <ul className="absolute z-40 left-0 right-0 mt-2 bg-white border border-[#E4EDEC] rounded-2xl shadow-lg overflow-hidden">
+          {results.length === 0 && (
+            <li className="px-4 py-3 text-sm text-[#93A9B0]">Nessuna località trovata.</li>
+          )}
+          {results.map((r, i) => (
+            <li key={r.loc}>
+              {/* onMouseDown: il click deve arrivare prima che il blur chiuda la lista. */}
+              <button
+                onMouseDown={(e) => { e.preventDefault(); go(r.loc); }}
+                onMouseEnter={() => setActive(i)}
+                className={`w-full text-left px-4 py-2.5 flex items-baseline gap-3 ${i === active ? "bg-[#EFF5F4]" : ""}`}
+              >
+                <span className="font-medium text-[#0F3440]">{r.loc}</span>
+                <span className="text-xs text-[#93A9B0] flex-1 truncate">{r.zone}</span>
+                <span className="mono text-xs text-[#135E73] shrink-0">
+                  {r.count} · da {fmt(r.min)} €
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function HomePage() {
   const { openGuide } = useContext(GateCtx);
   const stars = PLOTS.filter((p) => p.star).slice(0, 3);
@@ -247,6 +346,7 @@ function HomePage() {
           <p className="mt-5 text-[#4A6B75] max-w-lg">
             Selezioniamo terreni edificabili tra 23.000 e 50.000 € intorno ad Argostoli e ti guidiamo passo passo tra AFM, permessi e tasse — in italiano.
           </p>
+          <LocalitySearch />
           <div className="mt-7 flex flex-wrap gap-3">
             <Button asChild className="bg-[#0F3440] hover:bg-[#14495a] text-white rounded-full h-12 px-7">
               <Link to="/terreni">Vedi i 13 terreni</Link>
@@ -303,9 +403,16 @@ function HomePage() {
 function TerreniPage() {
   const [filter, setFilter] = useState<"all" | "in" | "out" | "star" | "cheap">("all");
   const [maxPrice, setMaxPrice] = useState(50000);
+  // La query sta nell'URL: la home ci arriva con ?q=, e il link resta condivisibile.
+  const [params, setParams] = useSearchParams();
+  const q = params.get("q") ?? "";
+  const setQ = (v: string) =>
+    setParams(v ? { q: v } : {}, { replace: true });
+
   const list = useMemo(() => {
     return [...PLOTS]
       .sort((a, b) => a.price / a.sqm - b.price / b.sqm)
+      .filter((p) => matchesPlot(p, q))
       .filter((p) => p.price <= maxPrice)
       .filter((p) => {
         if (filter === "in") return p.status === "in";
@@ -314,7 +421,7 @@ function TerreniPage() {
         if (filter === "cheap") return p.price <= 35000;
         return true;
       });
-  }, [filter, maxPrice]);
+  }, [filter, maxPrice, q]);
 
   const chip = (f: typeof filter, label: string) => (
     <button key={f} onClick={() => setFilter(f)}
@@ -329,7 +436,24 @@ function TerreniPage() {
       <h1 className="display text-3xl md:text-5xl mt-2">Terreni in vendita a Cefalonia</h1>
       <p className="text-[#4A6B75] mt-2 max-w-xl text-sm">Ordinati per €/m² — il modo più onesto di confrontarli. Prezzi da riconfermare con le agenzie.</p>
 
-      <div className="mt-6 flex flex-wrap items-center gap-2 sticky top-16 z-30 bg-[#FDFDFB]/95 backdrop-blur py-3 -mx-1 px-1">
+      <div className="mt-6 sticky top-16 z-30 bg-[#FDFDFB]/95 backdrop-blur py-3 -mx-1 px-1">
+        <div className="flex items-center gap-2 bg-white border border-[#CADEDD] rounded-full h-11 px-4 mb-3 focus-within:border-[#2E93A6] transition-colors">
+          <span aria-hidden className="text-[#93A9B0]">⌕</span>
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Filtra per località o zona"
+            aria-label="Filtra per località o zona"
+            className="flex-1 bg-transparent outline-none text-sm placeholder:text-[#93A9B0]"
+          />
+          {q && (
+            <button onClick={() => setQ("")} aria-label="Azzera la ricerca"
+              className="mono text-xs text-[#93A9B0] hover:text-[#C0492F] shrink-0">
+              ✕
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
         {chip("all", "Tutti")}
         {chip("in", "Entro piano")}
         {chip("out", "Fuori piano")}
@@ -339,13 +463,18 @@ function TerreniPage() {
           <span>Max {fmt(maxPrice)} €</span>
           <input type="range" min={23000} max={50000} step={1000} value={maxPrice} onChange={(e) => setMaxPrice(+e.target.value)} className="accent-[#135E73] w-36" />
         </div>
+        </div>
       </div>
 
       <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {list.map((p, i) => <PlotCard key={p.id} p={p} delay={Math.min(i, 5) * 60} />)}
       </div>
       {list.length === 0 && (
-        <p className="text-center text-[#93A9B0] py-16">Nessun terreno con questi filtri. La capretta suggerisce di allargare il budget. 🐐</p>
+        <p className="text-center text-[#93A9B0] py-16">
+          {q
+            ? `Nessun terreno a «${q}». Prova un'altra località, o guarda tutte le zone. 🐐`
+            : "Nessun terreno con questi filtri. La capretta suggerisce di allargare il budget. 🐐"}
+        </p>
       )}
       <div className="pt-16"><FbBanner /></div>
     </div>
