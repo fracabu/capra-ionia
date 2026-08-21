@@ -19,10 +19,10 @@ import { goatSvg } from "../src/data/logo.ts";
 
 const OUT = resolve("public/guide");
 
-/* Da tenere allineati a src/App.tsx. FACEBOOK vuoto = il blocco non compare:
-   meglio nessun link che un link alla home generica di Facebook. */
+/* Da tenere allineati a src/App.tsx. FACEBOOK vuoto fa sparire il rigo:
+   meglio nessun link che uno alla home generica di Facebook. */
 const SITE = "https://fracabu.github.io/capra-ionia";
-const FACEBOOK = "";
+const FACEBOOK = "https://www.facebook.com/share/g/1T2jFjmEmb/";
 const CANDIDATES = [
   process.env.CHROME_PATH,
   "/opt/pw-browsers/chromium",
@@ -160,17 +160,17 @@ export function page({ kicker, title, html }, sub, id) {
     margin-right: 7pt; vertical-align: -.5pt;
   }
   .links {
-    margin-top: 13pt; padding: 8pt 11pt;
+    margin-top: 11pt; padding: 7pt 10pt;
     background: #F2F7F6; border-radius: 6pt; break-inside: avoid;
   }
   .links h2 {
-    margin: 0 0 6pt; padding: 0; border: 0;
+    margin: 0 0 5pt; padding: 0; border: 0;
     font-size: 9pt; letter-spacing: .1em; color: #135E73;
   }
-  .links p { margin: 0 0 5pt; font-size: 9pt; }
+  .links p { margin: 0 0 4pt; font-size: 8.8pt; }
   .links a { color: #135E73; font-weight: bold; }
-  .links .also { margin-top: 8pt; color: #93A9B0; font-size: 8.5pt; }
-  .links ul { margin: 3pt 0 0; padding-left: 14pt; font-size: 9pt; }
+  .links .also { margin-top: 6pt; color: #93A9B0; font-size: 8.5pt; }
+  .links ul { margin: 2pt 0 0; padding-left: 13pt; font-size: 8.8pt; }
   .note {
     margin-top: 14pt; padding-top: 7pt; border-top: .5pt solid #E4EDEC;
     font-size: 8.5pt; color: #93A9B0; font-style: italic;
@@ -179,7 +179,7 @@ export function page({ kicker, title, html }, sub, id) {
      una pagina in più, anche quando il contenuto entrerebbe in una sola. */
   footer {
     display: flex; justify-content: space-between; gap: 12pt;
-    margin-top: 12pt; padding-top: 5pt;
+    margin-top: 10pt; padding-top: 4pt;
     border-top: .5pt solid #E4EDEC;
     font-size: 7.5pt; color: #93A9B0;
     break-inside: avoid;

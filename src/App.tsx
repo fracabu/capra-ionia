@@ -19,7 +19,7 @@ import { inRing, plotLatLng, type Ring } from "@/lib/geo";
    copia l'endpoint (es. https://formspree.io/f/abcdwxyz) e incollalo qui sotto.
    Finché è vuoto, il form funziona in modalità demo (successo senza invio). */
 const FORM_ENDPOINT = "https://formspree.io/f/xvkplvgw";
-const FACEBOOK_URL = "https://www.facebook.com/"; // <-- URL del gruppo Facebook
+const FACEBOOK_URL = "https://www.facebook.com/share/g/1T2jFjmEmb/";
 
 /* ================= DATA ================= */
 
