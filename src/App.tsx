@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
    Per raccogliere DAVVERO le email: crea un form gratuito su https://formspree.io,
    copia l'endpoint (es. https://formspree.io/f/abcdwxyz) e incollalo qui sotto.
    Finché è vuoto, il form funziona in modalità demo (successo senza invio). */
-const FORM_ENDPOINT = "";
+const FORM_ENDPOINT = "https://formspree.io/f/xvkplvgw";
 const FACEBOOK_URL = "https://www.facebook.com/"; // <-- URL del gruppo Facebook
 
 /* ================= DATA ================= */
