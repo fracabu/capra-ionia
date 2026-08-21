@@ -256,7 +256,8 @@ function LocalitySearch() {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
-  const results = useMemo(() => findLocalities(q).slice(0, 6), [q]);
+  // A campo vuoto elenca tutto: i nomi dei paesi greci non si indovinano.
+  const results = useMemo(() => findLocalities(q).slice(0, q.trim() ? 6 : 12), [q]);
 
   const go = (loc?: string) => {
     setOpen(false);
@@ -287,7 +288,7 @@ function LocalitySearch() {
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 120)}
           onKeyDown={onKeyDown}
-          placeholder="Cerca una località — Livathos, Paliki, Argostoli…"
+          placeholder="Cerca una località"
           aria-label="Cerca una località"
           className="flex-1 bg-transparent outline-none text-sm placeholder:text-[#93A9B0]"
         />
@@ -296,10 +297,15 @@ function LocalitySearch() {
         </button>
       </div>
 
-      {open && q.trim() !== "" && (
-        <ul className="absolute z-40 left-0 right-0 mt-2 bg-white border border-[#E4EDEC] rounded-2xl shadow-lg overflow-hidden">
+      {open && (
+        <ul className="absolute z-40 left-0 right-0 mt-2 bg-white border border-[#E4EDEC] rounded-2xl shadow-lg overflow-y-auto max-h-[60vh]">
+          <li className="px-4 pt-3 pb-1 text-[11px] uppercase tracking-widest text-[#93A9B0] mono">
+            {q.trim() ? "Località trovate" : "Dove abbiamo terreni"}
+          </li>
           {results.length === 0 && (
-            <li className="px-4 py-3 text-sm text-[#93A9B0]">Nessuna località trovata.</li>
+            <li className="px-4 py-3 text-sm text-[#93A9B0]">
+              Nessuna località corrisponde a «{q}». Cancella per vederle tutte.
+            </li>
           )}
           {results.map((r, i) => (
             <li key={r.loc}>
@@ -307,12 +313,16 @@ function LocalitySearch() {
               <button
                 onMouseDown={(e) => { e.preventDefault(); go(r.loc); }}
                 onMouseEnter={() => setActive(i)}
-                className={`w-full text-left px-4 py-2.5 flex items-baseline gap-3 ${i === active ? "bg-[#EFF5F4]" : ""}`}
+                className={`w-full text-left px-4 py-3 ${i === active ? "bg-[#EFF5F4]" : ""}`}
               >
-                <span className="font-medium text-[#0F3440]">{r.loc}</span>
-                <span className="text-xs text-[#93A9B0] flex-1 truncate">{r.zone}</span>
-                <span className="mono text-xs text-[#135E73] shrink-0">
-                  {r.count} · da {fmt(r.min)} €
+                <span className="flex items-baseline gap-2">
+                  <span className="font-medium text-[#0F3440]">{r.loc}</span>
+                  <span className="text-xs text-[#93A9B0] truncate">{r.zone}</span>
+                </span>
+                <span className="block text-xs text-[#135E73] mt-0.5">
+                  {r.count === 1
+                    ? `1 terreno a ${fmt(r.min)} €`
+                    : `${r.count} terreni, dal più economico a ${fmt(r.min)} €`}
                 </span>
               </button>
             </li>
@@ -346,11 +356,6 @@ function HomePage() {
               Scarica la guida AFM
             </Button>
           </div>
-          <div className="mt-8 flex gap-8 mono text-sm">
-            <div><b className="text-lg">13</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">ANNUNCI</span></div>
-            <div><b className="text-lg">23–45k €</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">ENTRO PIANO</span></div>
-            <div><b className="text-lg">3,09%</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">IMPOSTA</span></div>
-          </div>
         </div>
         <div className="hidden md:flex justify-center">
           <div className="relative">
@@ -369,6 +374,11 @@ function HomePage() {
           </Link>
         </div>
         <PlotsMap />
+          <div className="mt-6 flex gap-8 mono text-sm">
+            <div><b className="text-lg">13</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">ANNUNCI</span></div>
+            <div><b className="text-lg">23–45k €</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">ENTRO PIANO</span></div>
+            <div><b className="text-lg">3,09%</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">IMPOSTA</span></div>
+          </div>
       </section>
 
       <div className="meander" />
