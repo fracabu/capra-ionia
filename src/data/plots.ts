@@ -56,3 +56,22 @@ Due avvertenze serie. Primo: il margine sui 4.000 m² è sottilissimo, quindi il
   { id: 12, loc: "Vlichata", zone: "Vista mare · 2,5 km dal mare", price: 40000, sqm: 4000, status: "out", note: "Fuori oikismos · 6 lotti disponibili", src: "Mesitiko Moisis / estateellas" },
   { id: 13, loc: "Menegata", zone: "Livathos", price: 45000, sqm: 538, status: "in", note: "Entro piano · ~240 m² edificabili", src: "Premium Kefalonia · 10490" },
 ];
+
+/* Estremi calcolati sugli annunci: aggiungendone uno da 80.000 € il cursore
+   dei filtri e i testi si allargano da soli, senza ritoccare l'interfaccia. */
+const prices = PLOTS.map((p) => p.price);
+export const PRICE_MIN = Math.min(...prices);
+export const PRICE_MAX = Math.max(...prices);
+
+/** Soglia della fascia "economici": la mediana, arrotondata a 5.000 €. */
+export const PRICE_CHEAP = (() => {
+  const sorted = [...prices].sort((a, b) => a - b);
+  const mid = sorted[Math.floor(sorted.length / 2)];
+  return Math.round(mid / 5000) * 5000;
+})();
+
+/** Fascia di prezzo dei soli terreni entro piano, per la riga dei numeri. */
+export const IN_PLAN_RANGE = (() => {
+  const inPlan = PLOTS.filter((p) => p.status === "in").map((p) => p.price);
+  return { min: Math.min(...inPlan), max: Math.max(...inPlan) };
+})();

@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { GUIDES, AFM_STEPS, type Guide } from "@/data/guides";
-import { PLOTS, type Plot } from "@/data/plots";
+import { PLOTS, PRICE_MIN, PRICE_MAX, PRICE_CHEAP, IN_PLAN_RANGE, type Plot } from "@/data/plots";
 import { GOAT_VIEWBOX, GOAT_PATHS, GOAT_EYE, GOAT_GROUND, GROUND_COLOR } from "@/data/logo";
 import PlotsMap from "@/components/PlotsMap";
 
@@ -347,7 +347,7 @@ function HomePage() {
             Il tuo terreno a Cefalonia, <em className="not-italic text-[#135E73]">senza sorprese</em> burocratiche.
           </h1>
           <p className="mt-5 text-[#4A6B75] max-w-lg">
-            Selezioniamo terreni edificabili tra 23.000 e 50.000 € intorno ad Argostoli e ti guidiamo passo passo tra AFM, permessi e tasse — in italiano.
+            Selezioniamo terreni edificabili tra {fmt(PRICE_MIN)} e {fmt(PRICE_MAX)} € a Cefalonia e ti guidiamo passo passo tra AFM, permessi e tasse — in italiano.
           </p>
           <LocalitySearch />
           <div className="mt-7 flex flex-wrap gap-3">
@@ -378,7 +378,7 @@ function HomePage() {
         <PlotsMap />
           <div className="mt-6 flex gap-8 mono text-sm">
             <div><b className="text-lg">{PLOTS.length}</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">ANNUNCI</span></div>
-            <div><b className="text-lg">23–45k €</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">ENTRO PIANO</span></div>
+            <div><b className="text-lg">{Math.round(IN_PLAN_RANGE.min / 1000)}–{Math.round(IN_PLAN_RANGE.max / 1000)}k €</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">ENTRO PIANO</span></div>
             <div><b className="text-lg">3,09%</b><span className="block text-[11px] text-[#93A9B0] tracking-widest">IMPOSTA</span></div>
           </div>
       </section>
@@ -415,7 +415,7 @@ function HomePage() {
 
 function TerreniPage() {
   const [filter, setFilter] = useState<"all" | "in" | "out" | "star" | "cheap">("all");
-  const [maxPrice, setMaxPrice] = useState(50000);
+  const [maxPrice, setMaxPrice] = useState(PRICE_MAX);
   // La query sta nell'URL: la home ci arriva con ?q=, e il link resta condivisibile.
   const [params, setParams] = useSearchParams();
   const q = params.get("q") ?? "";
@@ -431,7 +431,7 @@ function TerreniPage() {
         if (filter === "in") return p.status === "in";
         if (filter === "out") return p.status === "out";
         if (filter === "star") return p.star;
-        if (filter === "cheap") return p.price <= 35000;
+        if (filter === "cheap") return p.price <= PRICE_CHEAP;
         return true;
       });
   }, [filter, maxPrice, q]);
@@ -470,11 +470,11 @@ function TerreniPage() {
         {chip("all", "Tutti")}
         {chip("in", "Entro piano")}
         {chip("out", "Fuori piano")}
-        {chip("cheap", "≤ 35.000 €")}
+        {chip("cheap", `≤ ${fmt(PRICE_CHEAP)} €`)}
         {chip("star", "★ Consigliati")}
         <div className="flex items-center gap-3 ml-auto mono text-xs text-[#4A6B75]">
           <span>Max {fmt(maxPrice)} €</span>
-          <input type="range" min={23000} max={50000} step={1000} value={maxPrice} onChange={(e) => setMaxPrice(+e.target.value)} className="accent-[#135E73] w-36" />
+          <input type="range" min={PRICE_MIN} max={PRICE_MAX} step={1000} value={maxPrice} onChange={(e) => setMaxPrice(+e.target.value)} className="accent-[#135E73] w-36" />
         </div>
         </div>
       </div>
