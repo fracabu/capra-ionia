@@ -11,6 +11,8 @@ import { GUIDES, AFM_STEPS, type Guide } from "@/data/guides";
 import { PLOTS, PRICE_MIN, PRICE_MAX, PRICE_CHEAP, IN_PLAN_RANGE, type Plot } from "@/data/plots";
 import { GOAT_VIEWBOX, GOAT_PATHS, GOAT_EYE, GOAT_GROUND, GROUND_COLOR } from "@/data/logo";
 import PlotsMap from "@/components/PlotsMap";
+import PortalMap from "@/components/PortalMap";
+import { inRing, plotLatLng, type Ring } from "@/lib/geo";
 
 /* ================= CONFIG =================
    Per raccogliere DAVVERO le email: crea un form gratuito su https://formspree.io,
@@ -416,11 +418,17 @@ function HomePage() {
 function TerreniPage() {
   const [filter, setFilter] = useState<"all" | "in" | "out" | "star" | "cheap">("all");
   const [maxPrice, setMaxPrice] = useState(PRICE_MAX);
-  // La query sta nell'URL: la home ci arriva con ?q=, e il link resta condivisibile.
   const [params, setParams] = useSearchParams();
   const q = params.get("q") ?? "";
-  const setQ = (v: string) =>
-    setParams(v ? { q: v } : {}, { replace: true });
+  const setQ = (v: string) => setParams(v ? { q: v } : {}, { replace: true });
+
+  // Zona tracciata sulla mappa e scheda selezionata: reggono la sincronia
+  // fra elenco e mappa nei due versi.
+  const [ring, setRing] = useState<Ring | null>(null);
+  const [drawing, setDrawing] = useState(false);
+  const [activeId, setActiveId] = useState<number | null>(null);
+  // Su telefono la mappa è a richiesta: occuperebbe tutto lo schermo.
+  const [showMap, setShowMap] = useState(false);
 
   const list = useMemo(() => {
     return [...PLOTS]
@@ -433,8 +441,19 @@ function TerreniPage() {
         if (filter === "star") return p.star;
         if (filter === "cheap") return p.price <= PRICE_CHEAP;
         return true;
+      })
+      .filter((p) => {
+        if (!ring) return true;
+        const at = plotLatLng(p, PLOTS.filter((x) => x.loc === p.loc));
+        return at ? inRing(ring, at[0], at[1]) : false;
       });
-  }, [filter, maxPrice, q]);
+  }, [filter, maxPrice, q, ring]);
+
+  // Tocco su un segnaposto: l'elenco scorre alla scheda corrispondente.
+  const selectFromMap = (id: number) => {
+    setActiveId(id);
+    document.getElementById(`plot-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
 
   const chip = (f: typeof filter, label: string) => (
     <button key={f} onClick={() => setFilter(f)}
@@ -444,7 +463,7 @@ function TerreniPage() {
   );
 
   return (
-    <div className="page max-w-6xl mx-auto px-5 py-12">
+    <div className="page max-w-[1400px] mx-auto px-5 py-12">
       <p className="mono text-xs tracking-[.3em] text-[#2E93A6] uppercase">Il portale</p>
       <h1 className="display text-3xl md:text-5xl mt-2">Terreni in vendita a Cefalonia</h1>
       <p className="text-[#4A6B75] mt-2 max-w-xl text-sm">Ordinati per €/m² — il modo più onesto di confrontarli. Prezzi da riconfermare con le agenzie.</p>
@@ -479,24 +498,77 @@ function TerreniPage() {
         </div>
       </div>
 
-      <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {list.map((p, i) => <PlotCard key={p.id} p={p} delay={Math.min(i, 5) * 60} />)}
+      <div className="mt-4 grid lg:grid-cols-[1fr_460px] gap-6 items-start">
+        <div className="order-2 lg:order-1">
+          <button
+            onClick={() => setShowMap((v) => !v)}
+            className="lg:hidden w-full mb-3 mono text-xs rounded-full px-4 py-2.5 border border-[#CADEDD] bg-white text-[#135E73]">
+            {showMap ? "Nascondi la mappa" : "🗺 Mostra la mappa"}
+          </button>
+          <p className="mono text-xs text-[#93A9B0] mb-3">
+            {list.length === PLOTS.length
+              ? `${list.length} terreni`
+              : `${list.length} di ${PLOTS.length} terreni`}
+            {ring && " nella zona disegnata"}
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {list.map((p, i) => (
+              <div key={p.id} id={`plot-${p.id}`}
+                onMouseEnter={() => setActiveId(p.id)}
+                onMouseLeave={() => setActiveId(null)}
+                className={`rounded-2xl transition-shadow ${activeId === p.id ? "ring-2 ring-[#D9A441]" : ""}`}>
+                <PlotCard p={p} delay={Math.min(i, 5) * 60} />
+              </div>
+            ))}
+          </div>
+          {list.length === 0 && (
+            <p className="text-center text-[#93A9B0] py-16">
+              {ring
+                ? "Nessun terreno nella zona disegnata. Prova ad allargarla. 🐐"
+                : q
+                ? `Nessun terreno a «${q}». Prova un'altra località, o guarda tutte le zone. 🐐`
+                : "Nessun terreno con questi filtri. La capretta suggerisce di allargare il budget. 🐐"}
+            </p>
+          )}
+        </div>
+
+        <div className={`order-1 lg:order-2 lg:sticky lg:top-[190px] ${showMap ? "block" : "hidden lg:block"}`}>
+          <div className="flex items-center gap-2 mb-2">
+            <button
+              onClick={() => { setDrawing((d) => !d); if (ring) setRing(null); }}
+              className={`mono text-xs rounded-full px-4 py-2 border transition-colors ${drawing ? "bg-[#D9A441] text-white border-[#D9A441]" : "bg-white text-[#135E73] border-[#CADEDD] hover:border-[#2E93A6]"}`}>
+              {drawing ? "Sto disegnando…" : "✎ Disegna una zona"}
+            </button>
+            {ring && (
+              <button onClick={() => { setRing(null); setDrawing(false); }}
+                className="mono text-xs text-[#93A9B0] hover:text-[#C0492F]">
+                Cancella zona ✕
+              </button>
+            )}
+          </div>
+          <div className="h-[65vh] lg:h-[560px]">
+            <PortalMap
+              plots={list}
+              activeId={activeId}
+              onActivate={selectFromMap}
+              drawing={drawing}
+              ring={ring}
+              onRing={(r) => { setRing(r); setDrawing(false); }}
+            />
+          </div>
+          <p className="mt-2 text-[11px] text-[#93A9B0]">
+            {drawing
+              ? "Traccia un'area tenendo premuto sulla mappa."
+              : "Il segnaposto indica la località. Dove più terreni condividono un paese sono distanziati per renderli cliccabili."}
+          </p>
+        </div>
       </div>
-      {list.length === 0 && (
-        <p className="text-center text-[#93A9B0] py-16">
-          {q
-            ? `Nessun terreno a «${q}». Prova un'altra località, o guarda tutte le zone. 🐐`
-            : "Nessun terreno con questi filtri. La capretta suggerisce di allargare il budget. 🐐"}
-        </p>
-      )}
+
       <div className="pt-16"><FbBanner /></div>
     </div>
   );
 }
 
-/* ================= SCHEDA DEL SINGOLO TERRENO ================= */
-/* Le descrizioni sono testo semplice con paragrafi e **grassetto**: bastano
-   sei righe a renderle, senza aggiungere una libreria markdown al bundle. */
 function RichText({ text }: { text: string }) {
   return (
     <>
