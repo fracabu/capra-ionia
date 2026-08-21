@@ -1,6 +1,7 @@
 # 🐐 CAPRA IONIA — Terreni edificabili a Cefalonia
 
-Landing/portale per la nicchia "terreni edificabili a Cefalonia per italiani":
+Landing/portale per la nicchia "terreni edificabili a Cefalonia", con guide e
+assistenza in italiano:
 portale annunci con filtri, funnel di guide gratuite con raccolta email (lead),
 guida AFM interattiva e CTA verso la pagina Facebook.
 

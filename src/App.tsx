@@ -351,7 +351,7 @@ function HomePage() {
     <div className="page">
       <section className="max-w-6xl mx-auto px-5 pt-14 pb-10 grid md:grid-cols-[1.2fr_.8fr] gap-10 items-center">
         <div>
-          <p className="mono text-xs tracking-[.3em] text-[#2E93A6] uppercase">Cefalonia · Isole Ionie · per italiani</p>
+          <p className="mono text-xs tracking-[.3em] text-[#2E93A6] uppercase">Cefalonia · Isole Ionie · in italiano</p>
           <h1 className="display text-[clamp(38px,6vw,64px)] leading-[1.02] mt-3">
             Il tuo terreno a Cefalonia, <em className="not-italic text-[#135E73]">senza sorprese</em> burocratiche.
           </h1>
